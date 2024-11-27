@@ -1,6 +1,7 @@
 import { BrowserRouter,Routes,Route } from "react-router-dom"
 import About from "./pages/About"
 import Dashboard from "./pages/Dashboard"
+import ScrollToTop from "./components/ScrollToTop"
 function App() {
 
   return (
@@ -13,6 +14,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard/>}></Route>
         </Routes>
       </BrowserRouter>
+      <ScrollToTop />
     </>
   )
 }

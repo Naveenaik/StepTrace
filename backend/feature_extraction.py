@@ -3,7 +3,7 @@ import mediapipe as mp
 import pandas as pd
 import math
 import os
-
+output_csv = 'live_output_gait_parameters.csv'
 def calculate_angle(a, b, c):
     ab = (b[0] - a[0], b[1] - a[1])
     bc = (c[0] - b[0], c[1] - b[1])
@@ -12,7 +12,7 @@ def calculate_angle(a, b, c):
     bc_magnitude = math.sqrt(bc[0]**2 + bc[1]**2)
     return 0 if ab_magnitude * bc_magnitude == 0 else math.degrees(math.acos(dot_product / (ab_magnitude * bc_magnitude)))
 
-def extract_features_from_video(video_url, person_name, output_csv):
+def extract_features_from_video(video_url, person_name):
     mp_pose = mp.solutions.pose
     pose = mp_pose.Pose(min_detection_confidence=0.7, min_tracking_confidence=0.7)
     

@@ -1,12 +1,21 @@
 // import React from 'react'
-import VideoStream from "../components/VideoStream"
+import Header  from '../components/home/Header'
+import Introduction from '../components/home/Introduction'
+import Motivation from '../components/home/Motivation'
+import Team from '../components/home/Team'
+import ContactUs from '../components/home/ContactUs'
+import Teacher from '../components/home/Teacher'
 
-const About = () => {
+function About() {
   return (
-    <div>
-      {/* <VideoStream streamURL={"http://192.168.64.6:8080/video"}/> */}
-      <VideoStream streamURL={"http://192.168.43.1:8080/video"}/>
-    </div>
+    <>
+      <Header />
+      <Introduction />
+      <Motivation />
+      <Teacher />
+      <Team />
+      <ContactUs />
+    </>
   )
 }
 

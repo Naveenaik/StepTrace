@@ -1,42 +1,52 @@
 import pandas as pd
+import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import EarlyStopping
+from tensorflow.keras.utils import to_categorical
 import joblib
 
-def train_model(input_csv, model_path, scaler_path, encoder_path):
-    data = pd.read_csv(input_csv)
-    X = data[['height', 'width']]  # Add more features as needed
+data = pd.read_csv('live_output_gait_parameters.csv')
+
+# X = data[['left_foot_y','right_foot_y',
+#           'left_elbow_angle', 'right_elbow_angle', 'left_knee_angle', 'right_knee_angle']]
+def train_model():
+    X = data[['height', 'width', 'height_width_ratio', 
+          'left_elbow_angle', 'right_elbow_angle', 'left_knee_angle', 'right_knee_angle']]
     y = data['person_name']
 
-    # Preprocess data
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
+
     label_encoder = LabelEncoder()
     y_encoded = label_encoder.fit_transform(y)
+    y_onehot = to_categorical(y_encoded)
 
-    # Train-test split
-    X_train, X_test, y_train, y_test = train_test_split(X_scaled, y_encoded, test_size=0.2, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X_scaled, y_onehot, test_size=0.2, random_state=42)
 
-    # Model definition
     model = Sequential([
-        Dense(128, activation='relu', input_shape=(X_train.shape[1],)),
+        Dense(128, input_dim=X_train.shape[1], activation='relu'),
         Dropout(0.3),
         Dense(64, activation='relu'),
         Dropout(0.3),
-        Dense(len(label_encoder.classes_), activation='softmax')
+        Dense(32, activation='relu'),
+        Dense(y_train.shape[1], activation='softmax')
     ])
-    model.compile(optimizer=Adam(learning_rate=0.0001), loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
-    # Train model
-    early_stopping = EarlyStopping(patience=5, restore_best_weights=True)
-    model.fit(X_train, y_train, validation_split=0.1, epochs=50, batch_size=16, callbacks=[early_stopping])
-    
-    # Save artifacts
-    model.save(model_path)
-    joblib.dump(scaler, scaler_path)
-    joblib.dump(label_encoder, encoder_path)
-    print("Training complete.")
+    model.compile(optimizer=Adam(learning_rate=0.0001), loss='categorical_crossentropy', metrics=['accuracy'])
+
+    early_stopping = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
+    model.fit(X_train, y_train, epochs=100, batch_size=16, validation_split=0.1, callbacks=[early_stopping])
+
+    model.save('gait_model.h5')
+    print("Model saved as 'gait_model.h5'")
+    joblib.dump(label_encoder, 'label_encoder.pkl')
+    print("Label encoder saved as 'label_encoder.pkl'")
+    joblib.dump(scaler, 'scaler.pkl')
+    print("Scaler saved as 'scaler.pkl'")
+
+    loss, accuracy = model.evaluate(X_test, y_test)
+    print(f"Test Accuracy: {accuracy * 100:.2f}%")

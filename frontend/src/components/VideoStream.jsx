@@ -1,4 +1,4 @@
-import React from "react";
+// import React from "react";
 
 const VideoStream = ({ streamURL }) => {
   return (
@@ -6,7 +6,7 @@ const VideoStream = ({ streamURL }) => {
       <img
         src={streamURL}
         alt="Mobile Camera Stream"
-        className="absolute top-0 left-0 w-full h-full object-contain transform rotate-90"
+        className="absolute top-0 left-0 w-full h-full object-contain transform rotate-90 scale-y-[-1]"
       />
     </div>
   );
