@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 
 const Section = ({ id, title, description, height = 'aspect-video' }) => {
   return (
