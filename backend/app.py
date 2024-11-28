@@ -4,9 +4,10 @@ from test_model import predict_person_from_live_stream
 from train_model import train_model
 from feature_extraction import extract_features_from_video
 from flask_cors import CORS
+import os
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for React Frontend
+CORS(app)  
 
 @app.route('/extract', methods=['POST'])
 def extract():
@@ -48,7 +49,15 @@ def predict():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@app.route('/restart', methods=['POST'])
+def restart_server():
+    try:
+        os.system("flask run")  
+        return jsonify({"message": "Server restarting..."}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == '__main__':
-    app.run(debug=True, threaded=True)  # Enable threading for simultaneous connections
+    app.run(debug=True, threaded=True)  

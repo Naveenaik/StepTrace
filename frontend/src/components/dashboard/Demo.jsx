@@ -11,6 +11,25 @@ const Demo = () => {
 
   const videoStreamURL = "http://192.168.64.6:8080/video";
 
+  const restartServer = async()=>{
+    try {
+      const response = await fetch("http://127.0.0.1:5000/restart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+  
+      const data = await response.json();
+      if (response.ok) {
+        alert(data.message);
+      } else {
+        alert(data.error || "An error occurred while restarting the server.");
+      }
+    } catch (error) {
+      console.error("Server Restart Error:", error);
+      alert("An error occurred while restarting the server. Please try again.");
+    }
+  }
+
   const handleExtract = async () => {
     if (!personName) {
       alert("Please enter a person's name before training.");
@@ -31,13 +50,10 @@ const Demo = () => {
     } catch (error) {
       console.error("Training Error:", error);
       alert("An error occurred during training. Please try again.");
-    } finally {
-      setIsProcessing(false);
     }
   };
 
   const handleTest = () => {
-    const videoStreamURL = "http://192.168.64.6:8080/video"; // Ensure this is the correct stream URL
     const eventSource = new EventSource(
       `http://127.0.0.1:5000/predict?video_stream_url=${encodeURIComponent(
         videoStreamURL
@@ -55,7 +71,6 @@ const Demo = () => {
     eventSource.onerror = (error) => {
       console.error("SSE Error:", error);
       alert("An error occurred during testing.");
-      setIsProcessing(false);
       eventSource.close();
     };
 
@@ -67,7 +82,6 @@ const Demo = () => {
   };
 
   const handleTestStop = () => {
-    // Find the most common prediction
     if (finalResult.length > 0) {
       const frequency = {};
       finalResult.forEach((item) => {
@@ -78,13 +92,12 @@ const Demo = () => {
         frequency[a] > frequency[b] ? a : b
       );
 
-      setAnalysisResult(mostCommonPrediction); // Set the most common prediction as result
+      setAnalysisResult(mostCommonPrediction);
     } else {
       setAnalysisResult("No predictions were made.");
     }
-
-    setIsProcessing(false); // Reset processing state
-    setFinalResult([]); // Clear the final results
+    setFinalResult([]);
+    restartServer();
   };
 
   const handleTrain = async () => {
@@ -97,16 +110,14 @@ const Demo = () => {
     } catch (error) {
       console.error("Training Error:", error);
       alert("An error occurred during training. Please try again.");
-    } finally {
-      setIsProcessing(false);
-    }
+    } 
   };
 
   return (
     <div className="bg-gray-100 min-h-screen">
       <div className="grid grid-cols-2 gap-20 px-10 py-6 h-[110vh]">
-        <div className="space-y-6">
-          <h1 className="text-xl font-bold">Extracting</h1>
+        <div className="space-y-6 border">
+          <h1 className="text-xl font-bold text-gray-700 text-center">Extracting</h1>
           <VideoStream streamURL={videoStreamURL} />
           <div className="px-10 py-6">
             <label className="block text-lg font-medium text-gray-700">
@@ -127,12 +138,12 @@ const Demo = () => {
               onClick={handleExtract}
               disabled={isProcessing}
             />
-            <Button label={"Stop"} variant="danger" disabled />
+            <Button label={"Stop"} variant="danger" onClick={restartServer} />
             <Button label={"Train"} variant="primary" onClick={handleTrain} />
           </div>
         </div>
-        <div className="space-y-6">
-          <h1 className="text-xl font-bold">Testing</h1>
+        <div className="space-y-6 border">
+          <h1 className="text-xl font-bold text-center text-gray-700">Testing</h1>
           <VideoStream streamURL={videoStreamURL} />
           <div className="flex justify-end space-x-4">
             <Button
