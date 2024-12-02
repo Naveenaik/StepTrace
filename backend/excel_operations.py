@@ -1,8 +1,9 @@
 import pandas as pd
 
 # Define the path to the CSV file
-file_path = 'new.csv'  # Replace with the actual path to your file
+file_path = 'live_output_gait_parameters.csv'  # Replace with the actual path to your file
 
+# file_path = 'new.csv'
 # Load the CSV file
 def load_csv():
     try:

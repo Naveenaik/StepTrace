@@ -8,11 +8,14 @@ const Demo = () => {
   const [personName, setPersonName] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [finalResult, setFinalResult] = useState([]);
+  const [btnExatract,setBtnExtract] = useState(true);
+  const [btnTest,setBtnTest] = useState(true);
 
-  // const videoStreamURL = "http://192.168.64.6:8080/video";
-  const videoStreamURL = "http://192.168.43.1:8080/video";
+  const videoStreamURL = "http://192.168.64.6:8080/video";
+  // const videoStreamURL = "http://192.168.43.1:8080/video";
 
   const restartServer = async()=>{
+    setBtnExtract(true);
     try {
       const response = await fetch("http://127.0.0.1:5000/restart", {
         method: "POST",
@@ -36,6 +39,7 @@ const Demo = () => {
       alert("Please enter a person's name before training.");
       return;
     }
+    setBtnExtract(false);
     setIsProcessing(true);
     try {
       const response = await fetch("http://127.0.0.1:5000/extract", {
@@ -55,6 +59,7 @@ const Demo = () => {
   };
 
   const handleTest = () => {
+    setBtnTest(false);
     const eventSource = new EventSource(
       `http://127.0.0.1:5000/predict?video_stream_url=${encodeURIComponent(
         videoStreamURL
@@ -92,7 +97,7 @@ const Demo = () => {
       const mostCommonPrediction = Object.keys(frequency).reduce((a, b) =>
         frequency[a] > frequency[b] ? a : b
       );
-
+      setBtnTest(true);
       setAnalysisResult("Person is " + mostCommonPrediction);
     } else {
       setAnalysisResult("No predictions were made.");
@@ -133,13 +138,17 @@ const Demo = () => {
             />
           </div>
           <div className="flex justify-end space-x-4">
-            <Button
+            {
+              btnExatract?
+              <Button
               label={"Start Extracting"}
               variant="success"
               onClick={handleExtract}
               disabled={isProcessing}
             />
+            :
             <Button label={"Stop"} variant="danger" onClick={restartServer} />
+            }
             <Button label={"Train"} variant="primary" onClick={handleTrain} />
           </div>
         </div>
@@ -147,13 +156,17 @@ const Demo = () => {
           <h1 className="text-xl font-bold text-center text-gray-700">Testing</h1>
           <VideoStream streamURL={videoStreamURL} />
           <div className="flex justify-end space-x-4">
-            <Button
+            {
+              btnTest?
+              <Button
               label={"Start Testing"}
               variant="success"
               onClick={handleTest}
               disabled={isProcessing}
             />
+            :
             <Button label={"Stop"} variant="danger" onClick={handleTestStop} />
+            }
           </div>
         </div>
       </div>

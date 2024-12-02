@@ -10,6 +10,7 @@ from tensorflow.keras.utils import to_categorical
 import joblib
 
 data = pd.read_csv('live_output_gait_parameters.csv')
+# data = pd.read_csv('new.csv')
 
 # X = data[['left_foot_y','right_foot_y',
 #           'left_elbow_angle', 'right_elbow_angle', 'left_knee_angle', 'right_knee_angle']]

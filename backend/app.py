@@ -12,9 +12,9 @@ CORS(app)
 
 @app.route('/extract', methods=['POST'])
 def extract():
-    data = request.get_json()
+    data = request.json
     person_name = data.get('person_name')
-    video_url = data.get(' video_stream_url')
+    video_url = data.get('video_stream_url')
     if not person_name:
         return jsonify({"error": "Person name is required"}), 400
     try:
