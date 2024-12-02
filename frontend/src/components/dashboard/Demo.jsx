@@ -9,7 +9,8 @@ const Demo = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [finalResult, setFinalResult] = useState([]);
 
-  const videoStreamURL = "http://192.168.64.6:8080/video";
+  // const videoStreamURL = "http://192.168.64.6:8080/video";
+  const videoStreamURL = "http://192.168.43.1:8080/video";
 
   const restartServer = async()=>{
     try {
@@ -92,7 +93,7 @@ const Demo = () => {
         frequency[a] > frequency[b] ? a : b
       );
 
-      setAnalysisResult(mostCommonPrediction);
+      setAnalysisResult("Person is " + mostCommonPrediction);
     } else {
       setAnalysisResult("No predictions were made.");
     }

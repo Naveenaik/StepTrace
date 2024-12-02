@@ -5,6 +5,7 @@ from train_model import train_model
 from feature_extraction import extract_features_from_video
 from flask_cors import CORS
 import os
+from excel_operations import get_person_data, delete_rows, maintain_uniform_rows
 
 app = Flask(__name__)
 CORS(app)  
@@ -58,6 +59,41 @@ def restart_server():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/get-person-data', methods=['GET'])
+def get_person_data_route():
+    person_name = request.args.get('person_name')
+    if not person_name:
+        return jsonify({"error": "Person name is required"}), 400
+    try:
+        person_data = get_person_data(person_name)
+        return jsonify(person_data.to_dict(orient='records')), 200
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 404
+
+@app.route('/delete-rows', methods=['POST'])
+def delete_rows_route():
+    data = request.json
+    person_name = data.get('person_name')
+    rows_to_delete = data.get('rows_to_delete', [])
+    if not person_name:
+        return jsonify({"error": "Person name is required"}), 400
+    try:
+        delete_rows(person_name, rows_to_delete)
+        return jsonify({"message": "Rows deleted successfully"}), 200
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+
+@app.route('/maintain-uniform-rows', methods=['POST'])
+def maintain_uniform_rows_route():
+    num_rows = request.json.get('num_rows')
+    if not num_rows:
+        return jsonify({"error": "Number of rows is required"}), 400
+    try:
+        result = maintain_uniform_rows(num_rows)
+        return jsonify({"message": "Uniformity maintained successfully", 
+                        "data": result.to_dict(orient='records')}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, threaded=True)  
