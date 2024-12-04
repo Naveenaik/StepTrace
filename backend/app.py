@@ -25,6 +25,7 @@ def extract():
     
 @app.route('/train', methods=['POST'])
 def train():
+    print("train")
     try:
         train_model()
         return jsonify({"message": "Model trained successfully"}), 200

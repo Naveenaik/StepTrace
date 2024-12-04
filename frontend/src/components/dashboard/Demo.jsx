@@ -11,8 +11,8 @@ const Demo = () => {
   const [btnExatract,setBtnExtract] = useState(true);
   const [btnTest,setBtnTest] = useState(true);
 
-  const videoStreamURL = "http://192.168.64.6:8080/video";
-  // const videoStreamURL = "http://192.168.43.1:8080/video";
+  // const videoStreamURL = "http://192.168.64.6:8080/video";
+  const videoStreamURL = "http://192.168.43.1:8080/video";
 
   const restartServer = async()=>{
     setBtnExtract(true);
@@ -98,12 +98,15 @@ const Demo = () => {
         frequency[a] > frequency[b] ? a : b
       );
       setBtnTest(true);
-      setAnalysisResult("Person is " + mostCommonPrediction);
+      console.log(mostCommonPrediction);
+      setAnalysisResult(`Person is ${mostCommonPrediction}`);
+      restartServer();
     } else {
       setAnalysisResult("No predictions were made.");
+      setBtnTest(true);
     }
     setFinalResult([]);
-    restartServer();
+    // restartServer();
   };
 
   const handleTrain = async () => {

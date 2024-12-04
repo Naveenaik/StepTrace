@@ -4,7 +4,7 @@ import Demo from '../components/dashboard/Demo'
 const Dashboard = () => {
   return (
     <div>
-      <Navbar/>
+      <Navbar showBack={true}/>
       <Demo/>
     </div>
   )
